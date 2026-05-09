@@ -141,8 +141,11 @@ async def _route(msg: dict, inbox: asyncio.Queue, session_task: asyncio.Task, em
 
 
 def _wipe_workspace() -> None:
+    """Called only when the frontend sends {"type": "clear"}.
+    Logs each file removed so accidental triggers are obvious in the server log."""
     if not WORKSPACE.exists():
         return
+    removed: list[str] = []
     for p in WORKSPACE.iterdir():
         if p.name == ".gitkeep":
             continue
@@ -150,6 +153,9 @@ def _wipe_workspace() -> None:
             shutil.rmtree(p)
         else:
             p.unlink()
+        removed.append(p.name)
+    if removed:
+        print(f"[main] _wipe_workspace removed {len(removed)} entries: {removed}", flush=True)
 
 
 if __name__ == "__main__":

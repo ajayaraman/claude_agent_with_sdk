@@ -921,7 +921,9 @@ $('#reset-btn').onclick = () => {
   if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'reset' }));
 };
 $('#clear-btn').onclick = () => {
-  if (ws?.readyState === WebSocket.OPEN) ws.send(JSON.stringify({ type: 'clear' }));
+  if (ws?.readyState !== WebSocket.OPEN) return;
+  if (!confirm('Delete every file under workspace/ ? This cannot be undone.')) return;
+  ws.send(JSON.stringify({ type: 'clear' }));
 };
 input.addEventListener('keydown', (e) => {
   if (e.key === 'Enter' && !e.shiftKey) {
